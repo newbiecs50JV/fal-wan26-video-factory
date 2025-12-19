@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Generator | Wan 2.6</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #111114;
+            --bg-secondary: #18181b;
+            --bg-tertiary: #222226;
+            --bg-card: #1c1c20;
+            --accent-primary: #e07840;
+            --accent-secondary: #f09060;
+            --accent-glow: rgba(224, 120, 64, 0.2);
+            --success: #4ade80;
+            --warning: #facc15;
+            --error: #f87171;
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --border: rgba(255, 255, 255, 0.08);
+            --radius: 8px;
+            --radius-sm: 5px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .logo-text h1 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .logo-text span {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: 100px;
+            font-size: 0.75rem;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .status-dot.running {
+            background: var(--warning);
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-dot.error {
+            background: var(--error);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Main Grid with Resizable Columns */
+        .main-grid {
+            display: flex;
+            gap: 0;
+            height: calc(100vh - 120px);
+        }
+
+        .column-left {
+            flex: 1;
+            min-width: 300px;
+            overflow-y: auto;
+            padding-right: 0.75rem;
+        }
+
+        .column-right {
+            width: 380px;
+            min-width: 280px;
+            max-width: 600px;
+            overflow-y: auto;
+            padding-left: 0.75rem;
+        }
+
+        .resize-handle {
+            width: 6px;
+            background: var(--bg-tertiary);
+            cursor: col-resize;
+            flex-shrink: 0;
+            transition: background 0.15s;
+            border-radius: 3px;
+        }
+
+        .resize-handle:hover,
+        .resize-handle.dragging {
+            background: var(--accent-primary);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.375rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-input.mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .form-hint {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+            padding: 0.5rem 1rem;
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-secondary);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent-primary);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.7rem;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Segments List */
+        .segments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .segment-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.875rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .segment-item:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .segment-item.selected {
+            border-color: var(--accent-primary);
+            background: rgba(224, 120, 64, 0.08);
+        }
+
+        .segment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .segment-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent-secondary);
+            background: rgba(224, 120, 64, 0.12);
+            padding: 0.125rem 0.375rem;
+            border-radius: 3px;
+        }
+
+        .segment-timing {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .segment-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .segment-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .segment-badge {
+            font-size: 0.65rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 3px;
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+        }
+
+        .segment-badge.screenshot {
+            background: rgba(224, 120, 64, 0.12);
+            color: var(--accent-secondary);
+        }
+
+        .segment-status {
+            display: flex;
+            gap: 0.375rem;
+            margin-top: 0.5rem;
+        }
+
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .status-icon.success {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+        }
+
+        .status-icon.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+        }
+
+        .segment-actions {
+            display: flex;
+            gap: 0.375rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Progress */
+        .progress-container {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.375rem;
+            text-align: center;
+        }
+
+        /* Logs */
+        .logs-container {
+            max-height: 180px;
+            overflow-y: auto;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            color: var(--text-secondary);
+            padding: 0.125rem 0;
+        }
+
+        .log-entry.success { color: var(--success); }
+        .log-entry.error { color: var(--error); }
+        .log-entry.warning { color: var(--warning); }
+
+        /* API Status */
+        .api-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .api-status.configured {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            color: var(--success);
+        }
+
+        .api-status.not-configured {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--error);
+        }
+
+        /* Character Preview */
+        .character-preview {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .character-preview img {
+            max-width: 150px;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--accent-primary);
+            cursor: pointer;
+        }
+
+        .character-preview .label {
+            font-size: 0.7rem;
+            color: var(--success);
+            margin-top: 0.375rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .modal-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.25rem;
+            padding: 0.25rem;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 1.25rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Materials Grid */
+        .materials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .material-item {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            padding: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+        }
+
+        .material-item:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .material-item.success {
+            border-color: var(--success);
+        }
+
+        .material-item.error {
+            border-color: var(--error);
+        }
+
+        .material-item .icon {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .material-item .label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .main-grid {
+                flex-direction: column;
+                height: auto;
+            }
+            .column-left,
+            .column-right {
+                width: 100% !important;
+                min-width: 0;
+                max-width: none;
+                padding: 0;
+            }
+            .resize-handle {
+                display: none;
+            }
+        }
+
+        /* Cost Estimate */
+        .cost-estimate {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .cost-header {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .cost-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .cost-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .cost-row.cost-total {
+            border-top: 1px solid var(--border);
+            padding-top: 0.5rem;
+            margin-top: 0.25rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .cost-hint {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Collapsible Section */
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem 0;
+        }
+
+        .collapsible-header .toggle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+        }
+
+        .collapsible-content {
+            display: none;
+            padding-top: 0.75rem;
+        }
+
+        .collapsible-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">W</div>
+                <div class="logo-text">
+                    <h1>Video Generator</h1>
+                    <span>wan/v2.6 + fal.ai</span>
+                </div>
+            </div>
+            <div class="status-badge" id="globalStatus">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Ready</span>
+            </div>
+        </header>
+
+        <div class="main-grid">
+            <!-- Left Column: Segments -->
+            <div class="column-left">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Script Segments</h2>
+                        <div class="btn-row">
+                            <button class="btn btn-secondary btn-small" onclick="selectAll()">Select All</button>
+                            <button class="btn btn-secondary btn-small" onclick="openAddSegmentModal()">Add</button>
+                            <button class="btn btn-secondary btn-small" onclick="resetSegments()">Reset</button>
+                        </div>
+                    </div>
+                    <div class="segments-list" id="segmentsList">
+                        <!-- Segments populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resize Handle -->
+            <div class="resize-handle" id="resizeHandle"></div>
+
+            <!-- Right Column: Controls -->
+            <div class="column-right">
+                <!-- API Configuration -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">API Configuration</h2>
+                    </div>
+                    
+                    <div class="api-status not-configured" id="apiStatus">
+                        <span id="apiStatusText">API key not configured</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">FAL API Key</label>
+                        <input type="password" class="form-input mono" id="falKeyInput" 
+                            placeholder="Enter your fal.ai API key">
+                        <div class="form-hint">Get your key at fal.ai/dashboard</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Voice ID</label>
+                        <input type="text" class="form-input mono" id="voiceIdInput" 
+                            placeholder="Voice4c5cab3d1765912370">
+                        <div class="form-hint">Create your voice at <a href="https://fal.ai/models/fal-ai/minimax/voice-clone" target="_blank" style="color: var(--accent-primary);">fal.ai/minimax/voice-clone</a></div>
+                    </div>
+
+                    <button class="btn btn-primary btn-block" onclick="saveApiConfig()">
+                        Save Configuration
+                    </button>
+                </div>
+
+                <!-- Character Settings -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Character Settings</h2>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Animal</label>
+                            <input type="text" class="form-input" id="animalInput" 
+                                value="capybara" placeholder="capybara, penguin, fox...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Style</label>
+                            <input type="text" class="form-input" id="styleInput" 
+                                value="3D animation style, cinematic 4K">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Custom Character Prompt (optional)</label>
+                        <textarea class="form-textarea" id="characterPromptInput" rows="3"
+                            placeholder="Leave empty to use auto-generated prompt"></textarea>
+                    </div>
+
+                    <button class="btn btn-secondary btn-block" onclick="applySettings()">
+                        Apply Settings
+                    </button>
+
+                    <div class="character-preview" id="characterPreview" style="display: none; margin-top: 1rem;">
+                        <img id="characterImage" src="" alt="Character" onclick="previewResult('image', this.src)">
+                        <div class="label">[OK] Character ready</div>
+                    </div>
+                </div>
+
+                <!-- Generation Controls -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Generation</h2>
+                    </div>
+
+                    <!-- Cost Estimate -->
+                    <div class="cost-estimate" id="costEstimate">
+                        <div class="cost-header">Estimated Cost</div>
+                        <div class="cost-breakdown">
+                            <div class="cost-row">
+                                <span>Character image</span>
+                                <span id="costCharacter">$0.15</span>
+                            </div>
+                            <div class="cost-row">
+                                <span>Audio (<span id="costAudioCount">0</span> segments)</span>
+                                <span id="costAudio">$0.00</span>
+                            </div>
+                            <div class="cost-row">
+                                <span>Images (<span id="costImageCount">0</span> segments)</span>
+                                <span id="costImages">$0.00</span>
+                            </div>
+                            <div class="cost-row">
+                                <span>Videos (<span id="costVideoCount">0</span> × 15s)</span>
+                                <span id="costVideos">$0.00</span>
+                            </div>
+                            <div class="cost-row cost-total">
+                                <span>Total (full pipeline)</span>
+                                <span id="costTotal">$0.00</span>
+                            </div>
+                        </div>
+                        <div class="cost-hint">fal.ai: Video $0.10/s, Image $0.15, Audio $0.10/1k chars</div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="generateCharacter()" id="btnCharacter">
+                            Generate Character
+                        </button>
+                        <button class="btn btn-primary" onclick="generateFull()" id="btnFull" disabled>
+                            Generate All (Full Pipeline)
+                        </button>
+                    </div>
+
+                    <div class="collapsible-header" onclick="toggleCollapsible('advancedControls')">
+                        <span class="form-label" style="margin: 0;">Advanced Controls</span>
+                        <span class="toggle" id="advancedControlsToggle">+</span>
+                    </div>
+                    <div class="collapsible-content" id="advancedControls">
+                        <div class="btn-group">
+                            <button class="btn btn-secondary btn-small" onclick="generateAudio()" id="btnAudio">
+                                Audio Only
+                            </button>
+                            <button class="btn btn-secondary btn-small" onclick="generateImages()" id="btnImages">
+                                Images Only
+                            </button>
+                            <button class="btn btn-secondary btn-small" onclick="generateVideos()" id="btnVideos">
+                                Videos Only
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="progress-container" id="progressContainer" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">Initializing...</div>
+                        <button class="btn btn-danger btn-small btn-block" onclick="cancelGeneration()" id="btnCancel" style="margin-top: 0.5rem;">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Logs -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Logs</h2>
+                        <button class="btn btn-secondary btn-small" onclick="clearLogs()">Clear</button>
+                    </div>
+                    <div class="logs-container" id="logsContainer">
+                        <div class="log-entry" style="color: var(--text-muted);">Logs will appear here...</div>
+                    </div>
+                </div>
+
+                <!-- Materials -->
+                <div class="card" id="materialsPanel" style="display: none;">
+                    <div class="card-header">
+                        <h2 class="card-title">Generated Materials</h2>
+                    </div>
+                    <div id="materialsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Segment Modal -->
+    <div class="modal" id="editSegmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="editModalTitle">Edit Segment</h3>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+
+            <input type="hidden" id="editSegmentId">
+
+            <div class="form-group">
+                <label class="form-label">Segment ID</label>
+                <input type="text" class="form-input mono" id="editSegmentIdInput" placeholder="segment_1">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Start (seconds)</label>
+                    <input type="number" class="form-input" id="editStartInput" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">End (seconds)</label>
+                    <input type="number" class="form-input" id="editEndInput" min="0" value="10">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Script Text</label>
+                <textarea class="form-textarea" id="editTextInput" rows="3" 
+                    placeholder="The text that will be spoken..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Visual Prompt</label>
+                <textarea class="form-textarea" id="editVisualPromptInput" rows="3" 
+                    placeholder="Description of the scene for image/video generation..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <input type="checkbox" id="editNeedsScreenshot"> 
+                    Needs Screenshot
+                </label>
+            </div>
+
+            <div class="form-group" id="screenshotUrlsGroup" style="display: none;">
+                <label class="form-label">Screenshot URLs (one per line)</label>
+                <textarea class="form-textarea mono" id="editScreenshotUrls" rows="2" 
+                    placeholder="https://example.com/page"></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="deleteCurrentSegment()" id="deleteSegmentBtn">Delete</button>
+                <button class="btn btn-primary" onclick="saveSegment()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal" id="previewModal" onclick="closePreview(event)">
+        <div class="modal-content" style="max-width: 800px;">
+            <div id="previewContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== STATE ====================
+        let segments = [];
+        let selectedSegments = new Set();
+        let pollInterval = null;
+        let characterGenerated = false;
+        let editingSegmentId = null;
+
+        // ==================== INITIALIZATION ====================
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            loadApiConfigFromStorage();
+            await loadSegments();
+            await loadSettings();
+            await checkExistingCharacter();
+            await checkApiStatus();
+            
+            // Screenshot toggle
+            document.getElementById('editNeedsScreenshot').addEventListener('change', (e) => {
+                document.getElementById('screenshotUrlsGroup').style.display = e.target.checked ? 'block' : 'none';
+            });
+            
+            // Periodic status check
+            setInterval(pollStatus, 2000);
+        });
+
+        // ==================== API CONFIGURATION ====================
+
+        function loadApiConfigFromStorage() {
+            const savedKey = localStorage.getItem('fal_key');
+            const savedVoice = localStorage.getItem('voice_id');
+            
+            if (savedKey) {
+                document.getElementById('falKeyInput').value = savedKey;
+            }
+            if (savedVoice) {
+                document.getElementById('voiceIdInput').value = savedVoice;
+            }
+        }
+
+        async function saveApiConfig() {
+            const falKey = document.getElementById('falKeyInput').value.trim();
+            const voiceId = document.getElementById('voiceIdInput').value.trim();
+            
+            if (!falKey) {
+                alert('Please enter your FAL API key');
+                return;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('fal_key', falKey);
+            if (voiceId) {
+                localStorage.setItem('voice_id', voiceId);
+            }
+            
+            // Send to backend
+            try {
+                const response = await fetch('/api/config/keys', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        fal_key: falKey, 
+                        voice_id: voiceId || 'Voice4c5cab3d1765912370' 
+                    })
+                });
+                
+                if (response.ok) {
+                    await checkApiStatus();
+                    addLogEntry('[OK] API configuration saved');
+                } else {
+                    addLogEntry('[ERROR] Failed to save API configuration');
+                }
+            } catch (error) {
+                console.error('Error saving API config:', error);
+                addLogEntry('[ERROR] Failed to save API configuration');
+            }
+        }
+
+        async function checkApiStatus() {
+            try {
+                const response = await fetch('/api/config/keys/status');
+                const data = await response.json();
+                
+                const statusEl = document.getElementById('apiStatus');
+                const statusText = document.getElementById('apiStatusText');
+                
+                if (data.configured) {
+                    statusEl.className = 'api-status configured';
+                    statusText.textContent = 'API key configured';
+                } else {
+                    statusEl.className = 'api-status not-configured';
+                    statusText.textContent = 'API key not configured';
+                }
+            } catch (error) {
+                console.error('Error checking API status:', error);
+            }
+        }
+
+        // ==================== SEGMENTS ====================
+
+        async function loadSegments() {
+            try {
+                const response = await fetch('/api/segments');
+                segments = await response.json();
+                renderSegments();
+            } catch (error) {
+                console.error('Error loading segments:', error);
+            }
+        }
+
+        function renderSegments() {
+            const container = document.getElementById('segmentsList');
+            container.innerHTML = segments.map((seg, index) => `
+                <div class="segment-item ${selectedSegments.has(seg.id) ? 'selected' : ''}" 
+                     onclick="toggleSegment('${seg.id}')"
+                     data-id="${seg.id}">
+                    <div class="segment-header">
+                        <span class="segment-id">${seg.id}</span>
+                        <span class="segment-timing">${seg.start}s - ${seg.end}s (${seg.duration}s)</span>
+                    </div>
+                    <p class="segment-text">${seg.text}</p>
+                    <div class="segment-meta">
+                        ${seg.needs_screenshot ? '<span class="segment-badge screenshot">Screenshot</span>' : ''}
+                    </div>
+                    <div class="segment-status">
+                        <div class="status-icon" id="status-audio-${seg.id}" title="Audio">A</div>
+                        <div class="status-icon" id="status-image-${seg.id}" title="Image">I</div>
+                        <div class="status-icon" id="status-video-${seg.id}" title="Video">V</div>
+                    </div>
+                    <div class="segment-actions">
+                        <button class="btn btn-secondary btn-small" onclick="event.stopPropagation(); editSegment('${seg.id}')">Edit</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            updateCostEstimate();
+        }
+
+        function toggleSegment(id) {
+            if (selectedSegments.has(id)) {
+                selectedSegments.delete(id);
+            } else {
+                selectedSegments.add(id);
+            }
+            renderSegments();
+        }
+
+        function selectAll() {
+            if (selectedSegments.size === segments.length) {
+                selectedSegments.clear();
+            } else {
+                segments.forEach(seg => selectedSegments.add(seg.id));
+            }
+            renderSegments();
+        }
+
+        function getSelectedIds() {
+            return selectedSegments.size > 0 ? Array.from(selectedSegments) : [];
+        }
+
+        // ==================== SEGMENT EDITING ====================
+
+        function openAddSegmentModal() {
+            editingSegmentId = null;
+            document.getElementById('editModalTitle').textContent = 'Add Segment';
+            document.getElementById('deleteSegmentBtn').style.display = 'none';
+            
+            // Clear form
+            document.getElementById('editSegmentIdInput').value = `segment_${segments.length + 1}`;
+            document.getElementById('editStartInput').value = segments.length > 0 ? segments[segments.length - 1].end : 0;
+            document.getElementById('editEndInput').value = (segments.length > 0 ? segments[segments.length - 1].end : 0) + 10;
+            document.getElementById('editTextInput').value = '';
+            document.getElementById('editVisualPromptInput').value = '';
+            document.getElementById('editNeedsScreenshot').checked = false;
+            document.getElementById('editScreenshotUrls').value = '';
+            document.getElementById('screenshotUrlsGroup').style.display = 'none';
+            document.getElementById('editSegmentIdInput').disabled = false;
+            
+            document.getElementById('editSegmentModal').classList.add('active');
+        }
+
+        function editSegment(segmentId) {
+            const segment = segments.find(s => s.id === segmentId);
+            if (!segment) return;
+            
+            editingSegmentId = segmentId;
+            document.getElementById('editModalTitle').textContent = 'Edit Segment';
+            document.getElementById('deleteSegmentBtn').style.display = 'block';
+            
+            // Fill form
+            document.getElementById('editSegmentIdInput').value = segment.id;
+            document.getElementById('editSegmentIdInput').disabled = true;
+            document.getElementById('editStartInput').value = segment.start;
+            document.getElementById('editEndInput').value = segment.end;
+            document.getElementById('editTextInput').value = segment.text;
+            document.getElementById('editVisualPromptInput').value = segment.visual_prompt;
+            document.getElementById('editNeedsScreenshot').checked = segment.needs_screenshot;
+            document.getElementById('editScreenshotUrls').value = (segment.screenshot_urls || []).join('\n');
+            document.getElementById('screenshotUrlsGroup').style.display = segment.needs_screenshot ? 'block' : 'none';
+            
+            document.getElementById('editSegmentModal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editSegmentModal').classList.remove('active');
+            editingSegmentId = null;
+        }
+
+        async function saveSegment() {
+            const segmentId = document.getElementById('editSegmentIdInput').value.trim();
+            const data = {
+                id: segmentId,
+                start: parseInt(document.getElementById('editStartInput').value) || 0,
+                end: parseInt(document.getElementById('editEndInput').value) || 10,
+                text: document.getElementById('editTextInput').value.trim(),
+                visual_prompt: document.getElementById('editVisualPromptInput').value.trim(),
+                needs_screenshot: document.getElementById('editNeedsScreenshot').checked,
+                screenshot_urls: document.getElementById('editScreenshotUrls').value.split('\n').filter(u => u.trim())
+            };
+            
+            if (!data.text) {
+                alert('Script text is required');
+                return;
+            }
+            
+            try {
+                let response;
+                if (editingSegmentId) {
+                    // Update existing
+                    response = await fetch(`/api/segments/${editingSegmentId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                } else {
+                    // Add new
+                    response = await fetch('/api/segments', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                }
+                
+                if (response.ok) {
+                    closeEditModal();
+                    await loadSegments();
+                    addLogEntry(`[OK] Segment ${editingSegmentId ? 'updated' : 'added'}: ${segmentId}`);
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to save segment');
+                }
+            } catch (error) {
+                console.error('Error saving segment:', error);
+                alert('Failed to save segment');
+            }
+        }
+
+        async function deleteCurrentSegment() {
+            if (!editingSegmentId) return;
+            
+            if (!confirm(`Delete segment "${editingSegmentId}"?`)) return;
+            
+            try {
+                const response = await fetch(`/api/segments/${editingSegmentId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    closeEditModal();
+                    await loadSegments();
+                    addLogEntry(`[OK] Segment deleted: ${editingSegmentId}`);
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to delete segment');
+                }
+            } catch (error) {
+                console.error('Error deleting segment:', error);
+                alert('Failed to delete segment');
+            }
+        }
+
+        async function resetSegments() {
+            if (!confirm('Reset all segments to default template?')) return;
+            
+            try {
+                const response = await fetch('/api/segments/reset', { method: 'POST' });
+                if (response.ok) {
+                    await loadSegments();
+                    addLogEntry('[OK] Segments reset to default');
+                }
+            } catch (error) {
+                console.error('Error resetting segments:', error);
+            }
+        }
+
+        // ==================== SETTINGS ====================
+
+        async function loadSettings() {
+            try {
+                const [animalRes, styleRes, promptRes] = await Promise.all([
+                    fetch('/api/animal'),
+                    fetch('/api/style'),
+                    fetch('/api/character-prompt')
+                ]);
+                
+                const animalData = await animalRes.json();
+                const styleData = await styleRes.json();
+                const promptData = await promptRes.json();
+                
+                if (animalData.animal_type) {
+                    document.getElementById('animalInput').value = animalData.animal_type;
+                }
+                if (styleData.style) {
+                    document.getElementById('styleInput').value = styleData.style;
+                }
+                if (promptData.custom_prompt) {
+                    document.getElementById('characterPromptInput').value = promptData.custom_prompt;
+                }
+            } catch (error) {
+                console.error('Error loading settings:', error);
+            }
+        }
+
+        async function applySettings() {
+            const animal = document.getElementById('animalInput').value.trim();
+            const style = document.getElementById('styleInput').value.trim();
+            const customPrompt = document.getElementById('characterPromptInput').value.trim();
+            
+            if (!animal || !style) {
+                alert('Animal and style are required');
+                return;
+            }
+            
+            try {
+                await Promise.all([
+                    fetch('/api/animal', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ animal_type: animal })
+                    }),
+                    fetch('/api/style', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ style: style })
+                    }),
+                    fetch('/api/character-prompt', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt: customPrompt })
+                    })
+                ]);
+                
+                // Reset character
+                document.getElementById('characterPreview').style.display = 'none';
+                characterGenerated = false;
+                document.getElementById('btnFull').disabled = true;
+                
+                addLogEntry('[OK] Settings applied');
+            } catch (error) {
+                console.error('Error applying settings:', error);
+                addLogEntry('[ERROR] Failed to apply settings');
+            }
+        }
+
+        // ==================== CHARACTER ====================
+
+        async function checkExistingCharacter() {
+            try {
+                const response = await fetch('/api/character/status');
+                const data = await response.json();
+                
+                if (data.generated && data.url) {
+                    showCharacterPreview(data.url);
+                    characterGenerated = true;
+                    document.getElementById('btnFull').disabled = false;
+                }
+            } catch (error) {
+                console.log('No existing character');
+            }
+        }
+
+        async function generateCharacter() {
+            const cost = PRICING.characterImage;
+            if (!confirm(`Estimated cost: $${cost.toFixed(2)}\n\nProceed with character generation?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/generate/character', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    alert(error.error || 'Character generation failed');
+                    return;
+                }
+                
+                document.getElementById('progressContainer').style.display = 'block';
+                document.getElementById('btnCharacter').disabled = true;
+                
+                pollCharacterGeneration();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to generate character');
+            }
+        }
+
+        async function pollCharacterGeneration() {
+            const checkStatus = async () => {
+                const response = await fetch('/api/status');
+                const status = await response.json();
+                
+                updateProgress(status);
+                updateLogs(status.logs);
+                
+                if (!status.running) {
+                    const charStatus = await fetch('/api/character/status');
+                    const charData = await charStatus.json();
+                    
+                    if (charData.generated && charData.url) {
+                        showCharacterPreview(charData.url);
+                        characterGenerated = true;
+                        document.getElementById('btnFull').disabled = false;
+                    }
+                    
+                    document.getElementById('btnCharacter').disabled = false;
+                    return;
+                }
+                
+                setTimeout(checkStatus, 1000);
+            };
+            
+            checkStatus();
+        }
+
+        function showCharacterPreview(url) {
+            const preview = document.getElementById('characterPreview');
+            const img = document.getElementById('characterImage');
+            
+            img.src = url;
+            preview.style.display = 'block';
+        }
+
+        // ==================== GENERATION ====================
+
+        async function generateAudio() {
+            await startGeneration('/api/generate/audio');
+        }
+
+        async function generateImages() {
+            await startGeneration('/api/generate/images');
+        }
+
+        async function generateVideos() {
+            await startGeneration('/api/generate/videos');
+        }
+
+        async function generateFull() {
+            if (!characterGenerated) {
+                alert('Please generate the character first');
+                return;
+            }
+            await startGeneration('/api/generate/full');
+        }
+
+        async function startGeneration(endpoint, skipConfirm = false) {
+            const segmentIds = getSelectedIds();
+            const segmentCount = segmentIds.length > 0 ? segmentIds.length : segments.length;
+            
+            // Calculate cost for confirmation
+            if (!skipConfirm) {
+                const cost = calculateCost(endpoint, segmentCount);
+                if (!confirm(`Estimated cost: $${cost.toFixed(2)}\n\nProceed with generation?`)) {
+                    return;
+                }
+            }
+            
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ segment_ids: segmentIds })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    alert(error.error || 'Generation failed');
+                    return;
+                }
+                
+                document.getElementById('progressContainer').style.display = 'block';
+                setButtonsDisabled(true);
+                startPolling();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to start generation');
+            }
+        }
+
+        function calculateCost(endpoint, segmentCount) {
+            const selected = getSelectedIds();
+            const selectedSegs = selected.length > 0 
+                ? segments.filter(s => selected.includes(s.id))
+                : segments;
+            
+            let totalChars = 0;
+            selectedSegs.forEach(seg => totalChars += (seg.text || '').length);
+            
+            let cost = 0;
+            
+            if (endpoint.includes('audio') || endpoint.includes('full')) {
+                cost += totalChars * PRICING.audioPerChar;
+            }
+            if (endpoint.includes('images') || endpoint.includes('full')) {
+                cost += segmentCount * PRICING.imagePerGen;
+            }
+            if (endpoint.includes('videos') || endpoint.includes('full')) {
+                cost += segmentCount * 15 * PRICING.videoPerSecond;
+            }
+            if (endpoint.includes('character')) {
+                cost += PRICING.characterImage;
+            }
+            
+            return cost;
+        }
+
+        function startPolling() {
+            if (pollInterval) clearInterval(pollInterval);
+            pollInterval = setInterval(pollStatus, 1000);
+        }
+
+        function stopPolling() {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+                pollInterval = null;
+            }
+        }
+
+        async function pollStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const status = await response.json();
+                
+                updateProgress(status);
+                updateLogs(status.logs);
+                updateMaterials(status.results);
+                
+                if (!status.running && pollInterval) {
+                    stopPolling();
+                    setButtonsDisabled(false);
+                    document.getElementById('btnCancel').style.display = 'none';
+                }
+            } catch (error) {
+                // Silent fail
+            }
+        }
+
+        function updateProgress(status) {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            if (status.running) {
+                statusDot.className = 'status-dot running';
+                statusText.textContent = `Processing ${status.current_segment || '...'}`;
+                progressFill.style.width = `${status.progress}%`;
+                progressText.textContent = `${status.current_step || 'Processing'} - ${status.progress}%`;
+            } else {
+                statusDot.className = 'status-dot';
+                statusText.textContent = 'Ready';
+                if (status.progress === 100) {
+                    progressFill.style.width = '100%';
+                    progressText.textContent = 'Complete';
+                }
+            }
+            
+            // Update segment status indicators
+            if (status.results) {
+                status.results.forEach(result => {
+                    const icon = document.getElementById(`status-${result.step}-${result.segment_id}`);
+                    if (icon) {
+                        icon.classList.remove('success', 'error');
+                        icon.classList.add(result.success ? 'success' : 'error');
+                    }
+                });
+            }
+        }
+
+        function setButtonsDisabled(disabled) {
+            document.getElementById('btnAudio').disabled = disabled;
+            document.getElementById('btnImages').disabled = disabled;
+            document.getElementById('btnVideos').disabled = disabled;
+            document.getElementById('btnFull').disabled = disabled || !characterGenerated;
+            document.getElementById('btnCharacter').disabled = disabled;
+            
+            const cancelBtn = document.getElementById('btnCancel');
+            cancelBtn.style.display = disabled ? 'block' : 'none';
+        }
+
+        async function cancelGeneration() {
+            try {
+                await fetch('/api/cancel', { method: 'POST' });
+                addLogEntry('[INFO] Cancellation requested');
+            } catch (error) {
+                console.error('Cancel error:', error);
+            }
+        }
+
+        // ==================== LOGS ====================
+
+        function updateLogs(logs) {
+            const container = document.getElementById('logsContainer');
+            if (!logs || logs.length === 0) {
+                container.innerHTML = '<div class="log-entry" style="color: var(--text-muted);">Logs will appear here...</div>';
+                return;
+            }
+            
+            container.innerHTML = logs.map(log => {
+                let className = 'log-entry';
+                if (log.includes('[OK]')) className += ' success';
+                else if (log.includes('[ERROR]')) className += ' error';
+                else if (log.includes('[WARN]')) className += ' warning';
+                return `<div class="${className}">${log}</div>`;
+            }).join('');
+            
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addLogEntry(message) {
+            const container = document.getElementById('logsContainer');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            let className = 'log-entry';
+            if (message.includes('[OK]')) className += ' success';
+            else if (message.includes('[ERROR]')) className += ' error';
+            else if (message.includes('[WARN]')) className += ' warning';
+            
+            container.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function clearLogs() {
+            try {
+                await fetch('/api/logs/clear', { method: 'POST' });
+                document.getElementById('logsContainer').innerHTML = '<div class="log-entry" style="color: var(--text-muted);">Logs cleared</div>';
+            } catch (error) {
+                console.error('Clear logs error:', error);
+            }
+        }
+
+        // ==================== MATERIALS ====================
+
+        function updateMaterials(results) {
+            if (!results || results.length === 0) {
+                document.getElementById('materialsPanel').style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('materialsPanel').style.display = 'block';
+            
+            // Group by segment
+            const bySegment = {};
+            results.forEach(r => {
+                if (r.segment_id === 'main_character') return;
+                if (!bySegment[r.segment_id]) bySegment[r.segment_id] = {};
+                bySegment[r.segment_id][r.step] = r;
+            });
+            
+            const container = document.getElementById('materialsList');
+            container.innerHTML = Object.entries(bySegment).map(([segmentId, steps]) => `
+                <div style="margin-bottom: 0.75rem;">
+                    <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.375rem;">${segmentId}</div>
+                    <div class="materials-grid">
+                        ${renderMaterialItem(segmentId, 'audio', steps.audio, 'A', 'Audio')}
+                        ${renderMaterialItem(segmentId, 'image', steps.image, 'I', 'Image')}
+                        ${renderMaterialItem(segmentId, 'video', steps.video, 'V', 'Video')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderMaterialItem(segmentId, step, result, icon, label) {
+            if (!result) {
+                return `<div class="material-item"><div class="icon">${icon}</div><div class="label">${label}</div></div>`;
+            }
+            
+            const statusClass = result.success ? 'success' : 'error';
+            const onclick = result.success && result.url ? `onclick="previewResult('${step}', '${result.url}')"` : '';
+            
+            return `<div class="material-item ${statusClass}" ${onclick}><div class="icon">${icon}</div><div class="label">${label}</div></div>`;
+        }
+
+        // ==================== PREVIEW ====================
+
+        function previewResult(type, url) {
+            const modal = document.getElementById('previewModal');
+            const content = document.getElementById('previewContent');
+            
+            let html = '';
+            if (type === 'audio') {
+                html = `<audio controls src="${url}" autoplay style="width: 100%;"></audio>`;
+            } else if (type === 'image') {
+                html = `<img src="${url}" alt="Generated image" style="width: 100%; border-radius: var(--radius-sm);">`;
+            } else if (type === 'video') {
+                html = `<video controls src="${url}" autoplay style="width: 100%; border-radius: var(--radius-sm);"></video>`;
+            }
+            
+            content.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        function closePreview(event) {
+            if (event.target.id === 'previewModal') {
+                document.getElementById('previewModal').classList.remove('active');
+            }
+        }
+
+        // ==================== COST ESTIMATE ====================
+
+        const PRICING = {
+            characterImage: 0.15,      // Nano Banana Pro character generation
+            audioPerChar: 0.10 / 1000, // $0.10 per 1000 characters
+            imagePerGen: 0.15,         // Nano Banana Pro per image
+            videoPerSecond: 0.10       // $0.10 per second (720p)
+        };
+
+        function updateCostEstimate() {
+            const selected = getSelectedIds();
+            const segmentCount = selected.length > 0 ? selected.length : segments.length;
+            const selectedSegs = selected.length > 0 
+                ? segments.filter(s => selected.includes(s.id))
+                : segments;
+
+            // Calculate total characters for audio
+            let totalChars = 0;
+            selectedSegs.forEach(seg => {
+                totalChars += (seg.text || '').length;
+            });
+
+            // Calculate costs
+            const characterCost = PRICING.characterImage;
+            const audioCost = totalChars * PRICING.audioPerChar;
+            const imageCost = segmentCount * PRICING.imagePerGen;
+            const videoCost = segmentCount * 15 * PRICING.videoPerSecond; // 15s per video
+            const totalCost = characterCost + audioCost + imageCost + videoCost;
+
+            // Update UI
+            document.getElementById('costCharacter').textContent = '$' + characterCost.toFixed(2);
+            document.getElementById('costAudioCount').textContent = segmentCount;
+            document.getElementById('costAudio').textContent = '$' + audioCost.toFixed(2);
+            document.getElementById('costImageCount').textContent = segmentCount;
+            document.getElementById('costImages').textContent = '$' + imageCost.toFixed(2);
+            document.getElementById('costVideoCount').textContent = segmentCount;
+            document.getElementById('costVideos').textContent = '$' + videoCost.toFixed(2);
+            document.getElementById('costTotal').textContent = '$' + totalCost.toFixed(2);
+        }
+
+        // ==================== UTILITIES ====================
+
+        function toggleCollapsible(id) {
+            const content = document.getElementById(id);
+            const toggle = document.getElementById(id + 'Toggle');
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                toggle.textContent = '+';
+            } else {
+                content.classList.add('active');
+                toggle.textContent = '-';
+            }
+        }
+
+        // ==================== RESIZE COLUMNS ====================
+        
+        (function initResize() {
+            const handle = document.getElementById('resizeHandle');
+            const rightCol = document.querySelector('.column-right');
+            let isResizing = false;
+            
+            handle.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                handle.classList.add('dragging');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+                
+                const containerRect = document.querySelector('.main-grid').getBoundingClientRect();
+                const newWidth = containerRect.right - e.clientX;
+                
+                if (newWidth >= 280 && newWidth <= 600) {
+                    rightCol.style.width = newWidth + 'px';
+                }
+            });
+            
+            document.addEventListener('mouseup', () => {
+                if (isResizing) {
+                    isResizing = false;
+                    handle.classList.remove('dragging');
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
